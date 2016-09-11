@@ -1,0 +1,133 @@
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Pacman</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				color: #000;
+				font-family:Monospace;
+				font-size:13px;
+				text-align:center;
+				font-weight: bold;
+
+				background-color: #fff;
+				margin: 0px;
+				overflow: hidden;
+			}
+
+			#info {
+				color:#000;
+				position: absolute;
+				top: 0px; width: 100%;
+				padding: 5px;
+
+			}
+
+			a {
+				color: red;
+			}
+		</style>
+	</head>
+
+	<body>
+        <div id="time">Ala ma kota</div>
+		<div id="container"></div>
+
+		<script src="js/three.js"></script>
+        <script src="js/InitWorld.js"></script>
+        <script src="js/PacmanCharacter.js"></script>
+        <script src="js/Controls.js"></script>
+        <script src="js/FWA.js"></script>
+        <script src="js/GraphVertex.js"></script>
+        <script src="js/Ghost.js"></script>
+        <script src="js/CollisionDetector.js"></script>
+        <script src="js/MTLLoader.js"></script>
+        <script src="js/OBJMTLLoader.js"></script>
+
+		<script>
+
+			var camera, scene, renderer, time = Date.now(), startTime = Date.now();
+            var light;
+
+            toggleFullscreen();
+			init();
+			animate();
+
+			function init() {
+
+				scene = new THREE.Scene();
+
+				renderer = new THREE.WebGLRenderer();
+				renderer.setClearColor(0xffffff);
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+				var container = document.getElementById( 'container' );
+				container.appendChild( renderer.domElement );
+
+				camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 1000 );
+
+				// world
+                initWorld(scene);
+                FW();
+				light = new THREE.AmbientLight(0xffffff);
+				scene.add(light);
+
+				window.addEventListener('resize', onWindowResize, false);
+                document.addEventListener( 'mousemove', onMouseMove, false );
+                document.addEventListener( 'keydown', onKeyDown, false );
+                document.addEventListener( 'keyup', onKeyUp, false );
+			}
+            
+            function toggleFullscreen() {
+                var element = document.body;
+                document.addEventListener( 'click', function ( event ) {
+					// Ask the browser to lock the pointer
+					element.requestPointerLock = element.requestPointerLock || element.mozRequestPointerLock || element.webkitRequestPointerLock;
+					if ( /Firefox/i.test( navigator.userAgent ) ) {
+						var fullscreenchange = function ( event ) {
+							if ( document.fullscreenElement === element || document.mozFullscreenElement === element || document.mozFullScreenElement === element ) {
+								document.removeEventListener( 'fullscreenchange', fullscreenchange );
+								document.removeEventListener( 'mozfullscreenchange', fullscreenchange );
+								element.requestPointerLock();
+							}
+						}
+						document.addEventListener( 'fullscreenchange', fullscreenchange, false );
+						document.addEventListener( 'mozfullscreenchange', fullscreenchange, false );
+						element.requestFullscreen = element.requestFullscreen || element.mozRequestFullscreen || element.mozRequestFullScreen || element.webkitRequestFullscreen;
+						element.requestFullscreen();
+					} else {
+						element.requestPointerLock();
+					}
+				}, false );
+            }
+
+			function onWindowResize() {
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+				renderer.setSize(window.innerWidth, window.innerHeight);
+			}
+
+			function animate() {
+				requestAnimationFrame(animate);
+                var delta = Date.now()-time;
+                updateControls(delta);
+                GHOST_1.updatePosition(delta);
+                GHOST_2.updatePosition(delta);
+                time = Date.now();
+                var playTime = time-startTime;
+                document.getElementById("time").innerHTML ="Time: " + Math.floor(playTime/60000) + ":" + Math.floor(playTime/1000)%60 + ":" + playTime%1000;
+				render();
+			}
+
+			function render() {
+				renderer.render(scene, camera);
+			}
+
+		</script>
+
+	</body>
+</html>
