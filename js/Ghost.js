@@ -2,9 +2,17 @@ function Ghost(speed, mesh) {
     this.mesh = mesh;
     this.speed = speed;
     this.velocity = new THREE.Vector3(this.speed,0,0);
+    this.model;
     
     this.getX = function() {return this.mesh.x;}
     this.getZ = function() {return this.mesh.z;}
+    this.setMesh = function (mesh) {
+        mesh.position.x = this.mesh.position.x;
+        mesh.position.y = this.mesh.position.y;
+        mesh.position.z = this.mesh.position.z;
+        this.mesh = mesh.clone();
+        scene.add(this.mesh);
+    }
     this.updatePosition = function(dt) {
         this.mesh.position.x += dt*this.velocity.x;
         this.mesh.position.y += dt*this.velocity.y;
@@ -31,10 +39,27 @@ function Ghost(speed, mesh) {
             this.velocity = newVelocity;
             this.hasToChangeDirection = false;
         }
+
+        var angle = Math.acos((new THREE.Vector3(0,0,1).dot(this.velocity))/(this.velocity.length()));
+        this.mesh.rotation.y = angle;
     }
     this.positionOnMap = function() {
-        return getMapPosition(mesh.position);
+        return getMapPosition(this.mesh.position);
     }
     
     this.currenPositionOnMap = this.positionOnMap();
+
+    this.loadModel = function () {
+	    var loader = new THREE.OBJMTLLoader();
+	    loader.addEventListener('load', function (event) {
+		    mesh = event.content;
+		    mesh.scale.x = 0.4;
+		    mesh.scale.y = 0.4;
+		    mesh.scale.z = 0.4;
+
+            GHOST_1.setMesh(mesh);
+            GHOST_2.setMesh(mesh);
+	    });
+	    loader.load('GhostModel/Ghostobj.obj', 'GhostModel/Ghostobj.mtl', {side: THREE.DoubleSide});
+    }
 }

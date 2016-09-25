@@ -41,15 +41,18 @@ function initWorld(scene) {
   }  
     
   createPacman(scene);
-  GHOST_1 = createGhost(0.05);
+  GHOST_1 = createGhost(0.1);
+
   GHOST_1.mesh.position.x = 250;
   GHOST_1.mesh.position.y = 0;
   GHOST_1.mesh.position.z = 135;
     
-  GHOST_2 = createGhost(0.08);
+  GHOST_2 = createGhost(0.15);
   GHOST_2.mesh.position.x = 850;
   GHOST_2.mesh.position.y = 0;
   GHOST_2.mesh.position.z = 135;
+
+  GHOST_2.loadModel();
 }
 
 function createGhost(speed) {
@@ -57,7 +60,8 @@ function createGhost(speed) {
     var mat = new THREE.MeshPhongMaterial();
     var mesh = new THREE.Mesh(geom, mat);
     
-    scene.add(mesh);
+    //scene.add(mesh);
+    
     return new Ghost(speed, mesh);
 }
 
