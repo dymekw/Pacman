@@ -14,6 +14,7 @@ function Ghost(speed, mesh) {
         scene.add(this.mesh);
     }
     this.updatePosition = function(dt) {
+        dt*=0.99;
         this.mesh.position.x += dt*this.velocity.x;
         this.mesh.position.y += dt*this.velocity.y;
         this.mesh.position.z += dt*this.velocity.z;
